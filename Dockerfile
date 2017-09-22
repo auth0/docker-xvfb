@@ -1,4 +1,6 @@
-FROM auth0brokkr/node:6.9.5
+ARG NODE_VERSION
+
+FROM auth0brokkr/node:$NODE_VERSION
 
 LABEL maintainer "Auth0"
 
