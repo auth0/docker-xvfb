@@ -15,7 +15,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh "docker build . -t auth0brokkr/node-xvfb:${params.NODE_VERSION} --build-arg NODE_VERSION=${params.NODE_VERSION}"
+        sh "docker build . --no-cache -t auth0brokkr/node-xvfb:${params.NODE_VERSION} --build-arg NODE_VERSION=${params.NODE_VERSION}"
       }
     }
 
