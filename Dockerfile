@@ -23,7 +23,8 @@ RUN apt-get update -qqy \
     default-jre \
     sudo \
     unzip \
-    wget
+    wget \
+    libgconf-2-4
 
 #==========
 # Selenium
