@@ -1,19 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Copyright (c) 2011 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 # Let the wrapped binary know that it has been run through the wrapper.
-export CHROME_WRAPPER="`readlink -f "$0"`"
+export CHROME_WRAPPER="$(readlink -f "$0")"
 
-HERE="`dirname "$CHROME_WRAPPER"`"
+HERE="$(dirname "$CHROME_WRAPPER")"
 
 # Check if the CPU supports SSE2. If not, try to pop up a dialog to explain the
 # problem and exit. Otherwise the browser will just crash with a SIGILL.
 # http://crbug.com/348761
-grep ^flags /proc/cpuinfo|grep -qs sse2
-if [ $? != 0 ]; then
+grep ^flags /proc/cpuinfo | grep -qs sse2
+if [[ $? != 0 ]]; then
   SSE2_DEPRECATION_MSG="This computer can no longer run Google Chrome because \
 its hardware is no longer supported."
   if which zenity &> /dev/null; then
@@ -41,7 +41,7 @@ else
   # exist; some systems have bugs in xdg-mime that make it fail without it.
   xdg_app_dir="${XDG_DATA_HOME:-$HOME/.local/share/applications}"
   mkdir -p "$xdg_app_dir"
-  [ -f "$xdg_app_dir/mimeapps.list" ] || touch "$xdg_app_dir/mimeapps.list"
+  [[ -f "$xdg_app_dir/mimeapps.list" ]] || touch "$xdg_app_dir/mimeapps.list"
 fi
 
 # Always use our versions of ffmpeg libs.
