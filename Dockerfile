@@ -64,7 +64,6 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 #==================
 # Chrome webdriver
 #==================
-ARG CHROME_DRIVER_VERSION=2.27
 RUN CHROMEDRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE` && \
     mkdir -p /opt/chromedriver-$CHROMEDRIVER_VERSION && \
     curl -sS -o /tmp/chromedriver_linux64.zip http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip && \
@@ -91,3 +90,9 @@ USER jenkins
 RUN sudo chown jenkins:jenkins /app
 RUN sudo chown jenkins:jenkins /home/jenkins
 WORKDIR /app
+
+RUN echo "INSTALLED VERSIONS" \
+  && echo "  node: `node -v`" \
+  && echo "  npm: `npm -v`" \
+  && apt-cache policy google-chrome-stable | grep Installed | sed -e "s/Installed/Chrome/" \
+  && echo "  Chromedriver: `curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`"
