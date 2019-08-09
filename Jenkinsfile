@@ -13,26 +13,35 @@ pipeline {
   }
 
   stages {
+    stage('SharedLibs') {
+      steps {
+        library identifier: 'auth0-jenkins-pipelines-library@master', retriever: modernSCM(
+          [$class: 'GitSCMSource',
+          remote: 'git@github.com:auth0/auth0-jenkins-pipelines-library.git',
+          credentialsId: 'auth0extensions-ssh-key'])
+      }
+    }
     stage('Build') {
       steps {
-        sh "docker build . --no-cache -t auth0brokkr/node-xvfb:${params.NODE_VERSION} --build-arg NODE_VERSION=${params.NODE_VERSION}"
+        script {
+          def DOCKER_REGISTRY = getDockerRegistry()
+          NODE_XVFB_DOCKER_IMAGE="${DOCKER_REGISTRY}/node-xvfb:${params.NODE_VERSION}"
+          sh "docker build . --no-cache -t ${NODE_XVFB_DOCKER_IMAGE} --build-arg NODE_VERSION=${params.NODE_VERSION}"
+
+          docker_image = docker.image("${NODE_XVFB_DOCKER_IMAGE}")
+        }
       }
     }
 
     stage('Push') {
-      environment {
-        DOCKER_USER = credentials('docker-hub-user')
-        DOCKER_PASSWORD = credentials('docker-hub-password')
-      }
       steps {
-        sh "docker login -u ${env.DOCKER_USER} -p ${env.DOCKER_PASSWORD}"
-        sh "docker push auth0brokkr/node-xvfb:${params.NODE_VERSION}"
+        dockerPushArtifactory(docker_image.id)
       }
     }
 
     stage('Clean') {
       steps {
-        sh "docker rmi auth0brokkr/node-xvfb:${params.NODE_VERSION}"
+        dockerRemoveImage("${NODE_XVFB_DOCKER_IMAGE}")
       }
     }
   }
